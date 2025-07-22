@@ -1,0 +1,71 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+// 設定最大支援範圍
+const int MAX_M = 5;
+const int MAX_N = 50;
+
+// 用 -1 表示尚未計算過
+int memo[MAX_M][MAX_N];
+
+// 初始化備忘表
+void init_memo() {
+    for (int i = 0; i < MAX_M; ++i) {
+        for (int j = 0; j < MAX_N; ++j) {
+            memo[i][j] = -1;
+        }
+    }
+}
+
+int ackermann(int m, int n) {
+    // 檢查範圍（避免陣列越界）
+    if (m < MAX_M && n < MAX_N && memo[m][n] != -1) {
+        return memo[m][n];
+    }
+
+    int result;
+
+    if (m == 0) {
+        result = n + 1;
+    } else if (m == 1) {
+        result = n + 2;
+    } else if (m == 2) {
+        result = 2 * n + 3;
+    } else if (m == 3) {
+        result = (int)(pow(2, n + 3) - 3);
+    } else {
+        if (n == 0) {
+            result = ackermann(m - 1, 1);
+        } else {
+            int inner = ackermann(m, n - 1);
+            result = ackermann(m - 1, inner);
+        }
+    }
+
+    // 儲存結果（只存合法範圍）
+    if (m < MAX_M && n < MAX_N) {
+        memo[m][n] = result;
+    }
+
+    return result;
+}
+
+int main() {
+    init_memo();
+
+    int m, n;
+    cout << "輸入 m (最多 " << MAX_M - 1 << "): ";
+    cin >> m;
+    cout << "輸入 n (最多 " << MAX_N - 1 << "): ";
+    cin >> n;
+
+    if (m >= MAX_M || n >= MAX_N) {
+        cout << "超出支援範圍，請調整 MAX_M 和 MAX_N。\n";
+    } else {
+        int result = ackermann(m, n);
+        cout << "Ackermann(" << m << ", " << n << ") = " << result <<" "<< endl;
+    }
+
+    return 0;
+}
